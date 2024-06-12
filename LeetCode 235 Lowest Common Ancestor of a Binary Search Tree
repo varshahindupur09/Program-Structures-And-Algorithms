@@ -1,0 +1,57 @@
+######################################################################################################################
+# Solution: Leetcode 235: Finding the Lowest Common Ancestor of a Binary Search Tree
+
+Given a binary search tree (BST), find the lowest common ancestor (LCA) node of two given nodes in the BST.
+According to the definition of LCA on Wikipedia: “The lowest common ancestor is defined between two nodes p and q as the lowest node in T that has both p and q as descendants (where we allow a node to be a descendant of itself).”
+
+######################################################################################################################
+# Definition for a binary tree node.
+class Node:
+    def __init__(self, data):
+       self.data = data
+       self.next = None
+
+class TreeNode:
+    def __init__(self, x):
+        self.val = x
+        self.left = None
+        self.right = None
+
+class SList:
+    def __init__(self):
+        self.head = None
+
+    def push_front(self, x: int) -> None:
+        new_node = Node(x)
+        new_node.next = self.head
+        self.head = new_node
+
+    def pop_front(self) -> int:
+        if self.is_empty():
+            return -1  # Returning -1 to signify an empty stack
+        remove_node = self.head.data
+        self.head = self.head.next
+        return remove_node
+
+    def front(self) -> int:
+        if self.is_empty():
+            return -1  # Returning -1 to signify an empty stack
+        return self.head.data
+
+    def is_empty(self) -> bool:
+        return self.head is None
+
+class Solution:
+    def lowestCommonAncestor(self, root: 'TreeNode', p: 'TreeNode', q: 'TreeNode') -> 'TreeNode':
+        if root is None or root == p or root == q:
+            return root
+        
+        left = self.lowestCommonAncestor(self.left, p, q)
+        right = self.lowestCommonAncestor(self.right, p, q)
+
+        if left and right:
+            return root
+        
+        return left if left else right
+        
+        
