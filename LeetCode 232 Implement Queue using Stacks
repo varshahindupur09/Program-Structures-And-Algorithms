@@ -1,0 +1,191 @@
+################################################################################################################
+Solution: LeetCode 232: Implement Queue using Stacks
+Implement a first in first out (FIFO) queue using only two stacks. The implemented queue should support all the functions of a normal queue (push, peek, pop, and empty).
+
+Implement the MyQueue class:
+
+void push(int x) Pushes element x to the back of the queue.
+int pop() Removes the element from the front of the queue and returns it.
+int peek() Returns the element at the front of the queue.
+boolean empty() Returns true if the queue is empty, false otherwise.
+Notes:
+
+You must use only standard operations of a stack, which means only push to top, peek/pop from top, size, and is empty operations are valid.
+Depending on your language, the stack may not be supported natively. You may simulate a stack using a list or deque (double-ended queue) as long as you use only a stack's standard operations.
+ 
+
+Example 1:
+
+Input
+["MyQueue", "push", "push", "peek", "pop", "empty"]
+[[], [1], [2], [], [], []]
+Output
+[null, null, null, 1, 1, false]
+
+Explanation
+MyQueue myQueue = new MyQueue();
+myQueue.push(1); // queue is: [1]
+myQueue.push(2); // queue is: [1, 2] (leftmost is front of the queue)
+myQueue.peek(); // return 1
+myQueue.pop(); // return 1, queue is [2]
+myQueue.empty(); // return false
+
+################################################################################################################
+
+class ListNode:
+    def __init__(self, data: int, next=None):
+        self.data = data
+        self.next = next
+
+class Slist:
+    def __init__(self):
+        self._first = None
+        self._last = None
+        self._len = 0
+
+    # append: add a node at the end of the slist # Time: THETA(1) and  Space: THETA(1)
+    def append(self, value: int):
+        self._len = self._len + 1
+        self._build_a_node(value, True)
+        
+    # prepend: add a node at the beginning of the slist # Time: THETA(1) and  Space: THETA(1)
+    def prepend(self, value: int):
+        self._len = self._len + 1
+        self._build_a_node(value, False)
+
+    def _unhook(self, nodes: list) -> bool:
+        if nodes[0]:
+            currentnode = nodes[0]
+            previousnode = nodes[1]
+            if (currentnode == self._first) and (currentnode == self._last) and (previousnode is None):
+                # list has only 1 element
+                assert self._first == self._last
+                self._first = None
+                self._last = None
+            elif currentnode == self._first:
+                # first element being removed and list has more than 1 element
+                assert self._first.next is not None
+                self._first = currentnode.next  # Corrected: update _first correctly
+            elif currentnode == self._last:
+                # last element being removed and list has more than 1 element
+                assert self._first
+                previousnode.next = None
+                self._last = previousnode
+            else:
+                # you're removing middle element
+                assert self._first
+                assert self._last
+                previousnode.next = currentnode.next
+            self._len = self._len - 1
+            return True
+        else:
+            return False
+        
+    def delete(self, value: int) -> bool:
+        nodes = self._find(value)
+        a = self._unhook(nodes)
+        return a
+
+    # first element in slist # Time: THETA(1) and  Space: THETA(1)
+    def delete_front(self) -> bool:
+        if self._first:
+            nodes = [self._first, None]
+            a = self._unhook(nodes)
+            return a
+        else:
+            return False
+        
+    # get first element in slist # Time: THETA(1) and  Space: THETA(1)
+    def get_front(self):
+        if self._first:
+            return self._first.data
+        else:
+            return -1  # Corrected: return -1 instead of False
+    
+    # get last element in slist # Time: THETA(1) and  Space: THETA(1)
+    def get_last(self):
+        if self._first:
+            assert self._last
+            return self._last.data
+        else:
+            return -1  # Corrected: return -1 instead of False
+        
+    # delete element in slist # Time: THETA(n) and  Space: THETA(1)
+    def delete_last(self) -> bool:
+        if self._first:
+            nodes = [self._first, None]
+            # list of [currentnode, prevnode]
+            while nodes[0].next:
+                nodes[1] = nodes[0]
+                nodes[0] = nodes[0].next
+            
+            assert nodes[0]
+            assert nodes[0].next is None
+            if nodes[1]:
+                assert nodes[0].next == nodes[0]
+            a = self._unhook(nodes)
+            return a
+        else:
+            return False
+
+    # is slist empty # Time: THETA(1) and Space: THETA(1)
+    def is_empty(self) -> bool:
+        return self._len == 0
+
+    # number of elements in a list # Time: THETA(1) and Space: THETA(1)
+    def __len__(self) -> int:
+        return self._len
+
+    # build a node and add to end/beginning #Time; THETA(1) and Space: THETA(1)
+    def _build_a_node(self, i: int, append: bool = True):
+        n = ListNode(i)
+        if self._first is None and self._last is None:  # handle empty case
+            self._first = n
+            self._last = n
+        else:
+            if append:
+                self._last.next = n
+                self._last = n
+            else:
+                n.next = self._first
+                self._first = n
+
+    # find an element in slist # Time: O(n) and Space: THETA(1)
+    def _find(self, val: int) -> list:
+        nodes = [self._first, None]
+        while nodes[0] is not None:
+            if nodes[0].data == val:
+                return nodes
+            nodes[1] = nodes[0]
+            nodes[0] = nodes[0].next
+        return nodes
+
+class MyQueue:
+    def __init__(self):
+        self._s = Slist()
+
+    def push(self, x: int) -> None:
+        self._s.append(x)
+
+    def pop(self) -> int:
+        xvalue = self._s.get_front()
+        self._s.delete_front()
+        return xvalue
+    
+    def peek(self) -> bool:
+        return self._s.get_front()
+
+    def empty(self) -> bool:
+        l = len(self._s)
+        if l==0:
+            return True
+        return False
+        
+
+
+# Your MyQueue object will be instantiated and called as such:
+# obj = MyQueue()
+# obj.push(x)
+# param_2 = obj.pop()
+# param_3 = obj.peek()
+# param_4 = obj.empty()
