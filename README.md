@@ -1,2 +1,8 @@
-# ProgramStructureAndAlgorithmsCourse
-This repository is created to keep notes for the future. This course is a vital and captivating which is why I decided to create this repository so I can refer to these notes in the future.
+# Program Structures And Algorithms
+
+I have used this github to collect and solve different data structure and algorithms code by different ways and different platforms.
+
+I have divided the folders based on the data structures and it has codes from different platforms.
+
+LeetCode
+HackerEarth
