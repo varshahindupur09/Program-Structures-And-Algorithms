@@ -1,3 +1,6 @@
+# Time Complexity: O(n)
+# Auxiliary Space: O(1) space created for variables
+
 class Node:
     def __init__(self, data):
         self.data = data
@@ -13,16 +16,15 @@ class LinkedList:
         self.head = new_node
 
     def getNthNode(self, index):
-        current = self.head
-        print("incoming node ", current.data)
+        print("incoming node ", self.head.data)
         count = 0
         
-        while current: #last is not reached
+        while self.head: #last is not reached
             if count == index:
-                return current.data
+                return self.head.data
             count += 1
-            current = current.next
-            print("get_nth_index ", current.data, current.next.data, count)
+            self.head = self.head.next
+            print("get_nth_index ", self.head.data, self.head.next.data, count)
         return None
 
 # Driver Code 
