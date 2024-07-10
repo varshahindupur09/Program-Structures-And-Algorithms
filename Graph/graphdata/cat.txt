@@ -1,7 +1,0 @@
-Bar Bat 
-Cab Car
-Mat Bat
-Cab Cat
-Cat Mat
-Car Bar 
-Cat Bat
