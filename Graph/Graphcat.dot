@@ -1,0 +1,16 @@
+## Jagadeesh Vasudevamurthy ####
+digraph g {
+    "Bar";
+    "Bar" -> "Bat";
+    "Bat";
+    "Cab";
+    "Cab" -> "Car";
+    "Cab" -> "Cat";
+    "Car";
+    "Car" -> "Bar";
+    "Mat";
+    "Mat" -> "Bat";
+    "Cat";
+    "Cat" -> "Mat";
+    "Cat" -> "Bat";
+}

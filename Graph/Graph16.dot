@@ -1,0 +1,14 @@
+## Jagadeesh Vasudevamurthy ####
+digraph g {
+    "A";
+    "A" -> "C" [label="12.8"];
+    "A" -> "D" [label="60.0"];
+    "C";
+    "C" -> "B" [label="20.0"];
+    "C" -> "D" [label="32.9"];
+    "D";
+    "B";
+    "B" -> "A" [label="10.0"];
+    "E";
+    "E" -> "A" [label="7.0"];
+}
