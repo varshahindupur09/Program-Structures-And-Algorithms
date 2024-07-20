@@ -1,0 +1,34 @@
+// This is a weighted undirected graph
+graph G {
+  "C" [label="C (2.0)"];
+  "D" [label="D (7.0)"];
+  "E" [label="E (5.0)"];
+  "B" [label="B (1.0)"];
+  "G" [label="G (3.0)"];
+  "F" [label="F (7.0)"];
+  "A" [label="A (0.0)"];
+  "C" -- "D" [label="9.0"];
+  "C" -- "E" [label="3.0"];
+  "C" -- "B" [label="1.0"];
+  "C" -- "A" [label="3.0"];
+  "D" -- "C" [label="9.0"];
+  "D" -- "E" [label="2.0"];
+  "D" -- "G" [label="12.0"];
+  "D" -- "F" [label="1.0"];
+  "E" -- "C" [label="3.0"];
+  "E" -- "D" [label="2.0"];
+  "E" -- "B" [label="5.0"];
+  "E" -- "F" [label="2.0"];
+  "B" -- "C" [label="1.0"];
+  "B" -- "E" [label="5.0"];
+  "B" -- "G" [label="2.0"];
+  "B" -- "A" [label="1.0"];
+  "G" -- "D" [label="12.0"];
+  "G" -- "B" [label="2.0"];
+  "F" -- "D" [label="1.0"];
+  "F" -- "E" [label="2.0"];
+  "F" -- "A" [label="10.0"];
+  "A" -- "B" [label="1.0"];
+  "A" -- "C" [label="3.0"];
+  "A" -- "F" [label="10.0"];
+}

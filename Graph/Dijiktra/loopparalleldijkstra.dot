@@ -1,0 +1,13 @@
+// This is a weighted undirected graph
+graph G {
+  "s" [label="s (0.0)"];
+  "0" [label="0 (1.0)"];
+  "1" [label="1 (6.0)"];
+  "t" [label="t (7.0)"];
+  "s" -- "0" [label="1.0"];
+  "0" -- "s" [label="1.0"];
+  "0" -- "1" [label="5.0"];
+  "1" -- "0" [label="5.0"];
+  "1" -- "t" [label="1.0"];
+  "t" -- "1" [label="1.0"];
+}

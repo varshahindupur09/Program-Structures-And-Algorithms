@@ -1,0 +1,19 @@
+// This is a weighted undirected graph
+graph G {
+  "P" [label="P (0.0)"];
+  "Q" [label="Q (1.0)"];
+  "S" [label="S (4.0)"];
+  "T" [label="T (4.0)"];
+  "R" [label="R (2.0)"];
+  "U" [label="U (3.0)"];
+  "P" -- "Q" [label="1.0"];
+  "P" -- "S" [label="6.0"];
+  "P" -- "T" [label="7.0"];
+  "Q" -- "R" [label="1.0"];
+  "Q" -- "S" [label="4.0"];
+  "S" -- "T" [label="0.0"];
+  "S" -- "U" [label="2.0"];
+  "T" -- "U" [label="2.0"];
+  "R" -- "U" [label="1.0"];
+  "R" -- "S" [label="2.0"];
+}
