@@ -1,0 +1,13 @@
+# leetcode two sum
+
+# solution with one for/while loop
+
+class Solution:
+    def twoSum(self, nums: List[int], target: int) -> List[int]:
+        for i in range(len(nums)):
+            x = nums[i] 
+            y = target - x 
+            lis = nums[i+1:]
+            if y in lis:
+                ind = lis.index(y)+ (len(nums)-len(lis))
+                return [i,ind]
