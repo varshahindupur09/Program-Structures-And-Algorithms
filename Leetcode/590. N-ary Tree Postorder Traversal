@@ -1,0 +1,89 @@
+###########################################################################
+Solution 1: Recursion
+###########################################################################
+
+class Node:
+    def __init__(self, val=None, children=None):
+        self.val = val
+        self.children = children if children is not None else []
+
+class Solution:
+    def postorder(self, root: 'Node') -> List[int]:
+        if not root:
+            return []
+        
+        result = []
+        
+        def traverse(node):
+            for child in node.children:
+                traverse(child)
+            result.append(node.val)
+        
+        traverse(root)
+        return result
+
+###########################################################################
+Solution 2: Non Recursion
+###########################################################################
+
+class Node:
+    def __init__(self, val=None, children=None):
+        self.val = val
+        self.children = children if children is not None else []
+
+class Solution:
+    def postorder(self, root: 'Node') -> List[int]:
+        if not root:
+            return []
+
+        stack = [root]
+        result = []
+        
+        while stack:
+            node = stack.pop()
+            result.append(node.val)
+            if node.children:
+                stack.extend(node.children)
+
+        return result[::-1]
+
+
+
+###########################################################################
+Solution 3: Push with Custom Stack
+###########################################################################
+
+# Definition for a Node.
+class Node:
+    def __init__(self, val=None, children=None):
+        self.val = val
+        self.children = children if children is not None else []
+
+class Stack:
+    def __init__(self):
+        self.stack = []
+
+    def push(self, data):
+        self.stack.append(data)
+
+    def pop(self):
+        return self.stack.pop() if self.stack else None
+
+    def isEmpty(self):
+        return len(self.stack) == 0
+
+class Solution:
+    def postorder(self, root: 'Node') -> List[int]:
+        if not root:
+            return 
+
+        stack = Stack()
+        r = []
+        stack.push(root)
+
+        while not stack.isEmpty():
+            node = stack.pop()
+            r.append(node.val)
+            stack.stack.extend(node.children)
+        
+        return r[::-1]
