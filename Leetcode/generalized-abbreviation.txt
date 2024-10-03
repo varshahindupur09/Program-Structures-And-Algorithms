@@ -1,0 +1,29 @@
+# https://leetcode.com/problems/generalized-abbreviation/description/?envType=weekly-question&envId=2024-08-22
+
+This is using recursion:
+----------------------------------------------------------------------------------------------------------------------------------------
+from typing import List
+
+class Solution:
+    def generateAbbreviations(self, word: str) -> List[str]:
+        def backtrack(i, abbr):
+            if i == len(word):
+                result.append(abbr)
+                return
+
+            # Abbreviate the current character
+            if i > 0 and abbr[-1].isdigit():
+                num = int(abbr[-1]) + 1
+                backtrack(i + 1, abbr[:-1] + str(num))
+            else:
+                backtrack(i + 1, abbr + "1")
+
+            # Keep the current character as it is
+            backtrack(i + 1, abbr + word[i])
+
+        result = []
+        backtrack(0, "")
+        return result
+
+
+There is also a way to solve with DFS.
