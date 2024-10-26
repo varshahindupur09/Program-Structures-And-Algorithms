@@ -75,6 +75,9 @@ class Solution:
 SOLUTION 2: DFS
 ################################################################################
 
+### P.S: To simulate a max-heap (where the largest element is at the root), we push the negative of each level sum into the heap. This way, the smallest negative number (representing the largest original number) comes to the top of the heap.
+
+
 import heapq
 from typing import Optional
 
