@@ -29,5 +29,10 @@ class Solution:
                 i += 1
 
         return max_sum
-                
-                
+
+##################################################################
+notes:
+##################################################################
+1. using list to store the sums is not memory efficient 
+2 time complexity: O(n) since we are sliding by moving forward
+3. space complexity: O(k) since we are using hashset adding and removing elements
