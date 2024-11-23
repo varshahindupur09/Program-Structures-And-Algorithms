@@ -1,0 +1,99 @@
+# PROBLEM: https://leetcode.com/problems/number-of-islands/
+
+########################################################################################
+BFS
+########################################################################################
+  
+from collections import deque
+#O(R*C)+#O(R*C)=#O(R*C)=TC
+#O(R*C)=v,islands=O(R*C),O(1)=O(R*C)=SC
+class Solution:
+    def numIslands(self, grid: List[List[str]]) -> int:
+        if not grid:
+            return 0
+        # BFS  - optimal - recursion
+        islands = 0 
+        visited = set() # we can also use a 2D array
+        rows, cols = len(grid), len(grid[0]) #what if cols change
+
+        def bfs(row, col):
+            queue = deque()
+            queue.append((row,col))
+            visited.add((row,col))
+            
+            while queue: #O(R*C)
+                r, c = queue.popleft()
+                directions = [[1,0], [-1,0], [0,1], [0,-1]]
+                for dr, dc in directions:
+                    row, col = r+dr, c+dc
+                    if ((row in range(rows)) and 
+                        (col in range(cols)) and 
+                        ((row, col) not in visited) and 
+                        (grid[row][col] == "1")):
+                        queue.append((row,col))
+                        visited.add((row,col))
+
+        for row in range(rows): #O(R*C)
+            for col in range(cols):
+                if ((grid[row][col] == "1") and ((row,col) not in visited)):
+                    bfs(row, col)
+                    islands += 1
+        return islands
+
+
+# list could be used as a queue - the insertion in a list is more complex
+# graph traversal problem
+
+
+########################################################################################
+DFS
+########################################################################################
+
+class Solution:
+    def numIslands(self, grid: List[List[str]]) -> int:
+        # DFS marking visited node as 0
+        rows, cols = len(grid), len(grid[0])
+        islands = 0
+
+        def dfs(row, col):
+            if row in range(rows) and col in range(cols) and grid[row][col] == "1":
+                grid[row][col] = "0" 
+                dfs(row-1,col)
+                dfs(row+1,col)
+                dfs(row,col-1)
+                dfs(row,col+1)
+                
+        for row in range(rows):
+            for col in range(cols):
+                if grid[row][col] == "1":
+                    dfs(row,col)
+                    islands+=1
+        return islands
+
+########################################################################################
+BFS v/s DFS 
+########################################################################################  
+
+# Key Differences Between BFS and DFS
+Traversal Strategy:
+  BFS: Explores all neighbors level by level (layered approach).	
+  DFS: Explores one neighbor fully (deep) before backtracking.
+Implementation:
+  BFS: Uses a queue to store nodes to visit next.	
+  DFS: Uses a stack (explicit or recursive call stack).
+Order of Processing:	
+  BFS: Processes cells in the order they are discovered.
+  DFS: Processes cells by diving deep into one branch first.
+Memory Usage:
+  BFS: Needs space for a queue to store all the neighbors at the current level, which can grow large in densely connected areas.
+  DFS: Requires stack space for recursion, which can grow to the size of the largest island.
+Runtime Characteristics:
+  BFS: May spread outward more evenly and finish faster on sparse grids.	
+  DFS: May dive deep quickly and return after finishing one component.
+Modification:
+  BFS: Often marks nodes as visited while enqueuing them.	
+  DFS: Often marks nodes as visited while exploring them.
+Suitability:
+  BFS: Better for finding shortest paths or problems where exploring all neighbors evenly is preferred.	
+  DFS: Good for problems where deep exploration is sufficient or preferred.
+  
