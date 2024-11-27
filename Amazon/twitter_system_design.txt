@@ -1,0 +1,95 @@
+Functional Requirements:
+
+Post tweets: a user can publish a new message to their followers (6k requests/sec on average)
+Home timeline: A user can view tweets posted by the people they follow (400k requests/sec)
+Non-functional requirements:
+
+Optimize for reads
+Optimize for influencers
+High availability
+Low latency
+APIs:
+
+POST: /create/tweet
+Body {
+text: “”
+}
+
+GET: /getTweets
+
+POST: /follow
+body: {
+follower_id: “”
+}
+
+Constraints and assumptions
+
+500 million users in total
+200 million active users
+Every active user reads 100 feeds every day
+500 million tweets created per day
+An influencer might have up to 100 million followers
+Calculate usage
+
+200 million user * 100 tweets = 20 billion tweets read per day
+Tweet size: 1 KB for each text only tweet, 5 MB for each picture tweets and 10 MB for video tweet, so assume the average size of each tweet to be 1 MB
+20 billion tweets read per day * 1 MB per tweet = reading 20 PB of data per day
+High level design
+pic1
+
+Design core components
+
+User posts a tweet
+a. A client posts a tweet to the App server. The requests will be distributed to App servers through load balancer using random/round robin/least busy/sticky session/by request algorithms to prevent requests from going to unhealthy servers, prevent overloading resources, also help to eliminate a single point of failure.
+
+b. The APIs stores the tweet on a Relational Database because when it comes to ‘following’ we need the relationship between follower and followees, we need ‘joins’ in this case. That’s why we can’t use NoSQL to store user tweets. In order to scale this up we can store tweets and user information in NoSQL DB and store the following relationship in Graph DB.
+
+c. We'll probably want to choose a data store with fast writes such as Memory Cache. Reading 1 MB sequentially from memory takes about 250 microseconds, while reading from SSD takes 4x and from disk takes 80x longer.
+
+d. Store some media such as image and videos in the Object Store
+
+e. Because the data stored in Object Store is static, we can apply CDN which serves content from locations closer to the user. Serving content from CDNs can significantly improve performance in two ways: users receive content from data centers close to them, and your servers do not have to serve requests that the CDN fulfills. In this case we only use the PULL based CDN. We don’t want unnecessary push to the CDN for every image or video immediately.
+
+f. The App Server then does not have to interact with the Object Storage, it only needs to respond to the client with the information the user needs, including the reference/URL of the media data that stored in Object Store.
+
+g. After moving the images and videos from DB to Object Store, we’ll still have 500 GB of data written into Relational Database, that will be 15TB per month and 180 TB per year.
+
+User reads tweets
+a. Reads is the bottleneck of the system because in our assumption there will be a daily throughput of 20PB reading. The first approach is to have Master-slave replication of the DB. The master serves reads and writes, replicating writes to one or more slaves, which serve only reads. Slaves can also replicate to additional slaves in a tree-like fashion. If the master goes offline, the system can continue to operate in read-only mode until a slave is promoted to a master or a new master is provisioned. This approach can lower the latency of the server.
+
+b. Using LRU (Least Recently Used) algorithm in Caching Layer can also help to lower the latency because most of the time users are just interested in the recent tweets but not tweets from years ago.
+
+Data Modeling
+
+Twitter’s scaling challenge is not primarily due to tweet volume, but due to fan-out, each user follows many people, and each user is followed by many people. There are two ways of implementing these two operations:
+
+Posting a tweet simply inserts the new tweet into a global collection of tweets. When a user requests their home timeline, look up all the people they follow, find all the tweets for each of those users, and merge them sorted by time. In a relational database we my write a query such as
+SELECT tweets., users. FROM tweets
+JOIN users ON tweets.sender_id = users.id
+JOIN follows ON follows.followee_id = user.id
+WHERE follows.followers_id = current_user
+
+picture3
+
+Maintain a cache for each user’s home timeline-like a mailbox of tweets for each recipient user. When a user posts a tweet, look up all the people who follow that user, and insert the new tweet into each of their timeline caches. The request to read the home timeline is cheap because its result has been computed ahead of time.
+picture4
+On average, a tweet is delivered to about 75 followers, so 6k tweets per second become 450k writes per second to the home timeline caches. But some influencers have over 100 million followers, this means that a single tweet may result in over 100 million write to home timeline, that’s a huge challenge.
+
+The distribution of followers per users (maybe weighted by how often those users tweet) is a key load parameter when considering scalability, since it determines the fan-out load.
+
+So, we’d better use a hybrid of the two approaches. Most users’ tweets continue to be fanned out to home timeline at the time when they are posted, but a small number of users with a very large number of followers(influencers) are excepted from this fan-out. Tweets from an influencer that a user follows are fetched separately and merged with that user’s home timeline when it is read, like in approach 1. This hybrid approach is able to deliver consistently good performance.
+
+Scale the design
+
+a. We still might have to access the Relational Database when users are reading tweets because sometimes not all the data is stored in cache or sharding replicas. We can also use the asynchronous workflows such as the Message Queue to reduce request times for expensive operations. When using a Message Queue, an application pushes the information to the Message Queue, then notifies the user of job status. The user is not blocked, and the job is processed in the background. During this time, the client might optionally do a small amount of processing to make it seem like the task has been completed. In our case, when a user posts a tweet, the tweet could be instantly posted to the user’s timeline, but it could take some time before this tweet is actually delivered to all of the followers.
+
+b. After the new tweet has been pushed to Message Queue, we can also add Cluster/Workers to deal with the data. The new created data can be feed into a Feed Cache which is stored in memory, so when a user created some new tweets, all his followers can get data from the Feed Cache faster than the Relational Database, in this way, we have significantly reduced latency.
+
+c. The Feed Cache might also have a large amount of data because some influencers have up to 100 million followers, so we may also need to shard the Feed Cache too.
+
+picture2
+
+References:
+https://github.com/donnemartin/system-design-primer
+https://github.com/karanpratapsingh/system-design
+Designing Data-Intensive Applications by Martin Kleppmann
