@@ -1,6 +1,9 @@
 ###########################################################################
-https://leetcode.com/problems/merge-two-sorted-lists/
+21 https://leetcode.com/problems/merge-two-sorted-lists/
 ###########################################################################
+
+# TC: O(n+m)
+# SC: O(1)
 
 # Definition for singly-linked list.
 class ListNode:
@@ -29,4 +32,46 @@ class Solution:
             tail.next = list2
 
         return dummy.next
-            
+
+
+###########################################################################
+23 https://leetcode.com/problems/merge-k-sorted-lists/
+###########################################################################
+
+# Definition for singly-linked list.
+# class ListNode:
+#     def __init__(self, val=0, next=None):
+#         self.val = val
+#         self.next = next
+import heapq
+
+class Solution:
+    def mergeKLists(self, lists: List[Optional[ListNode]]) -> Optional[ListNode]:
+        heap = []
+
+        # k Log K
+        for i, node in enumerate(lists):
+            if node:
+                heapq.heappush(heap, (node.val, i, node))
+
+        dummy = ListNode()
+        curr = dummy
+
+        # n log K
+        while heap:
+            value, i, node = heapq.heappop(heap)
+            # print(value, i, node)
+            # 1 0 ListNode{val: 1, next: ListNode{val: 4, next: ListNode{val: 5, next: None}}}
+            # 1 1 ListNode{val: 1, next: ListNode{val: 3, next: ListNode{val: 4, next: None}}}
+            # 2 2 ListNode{val: 2, next: ListNode{val: 6, next: None}}
+            curr.next = node
+            curr = node
+            node = node.next
+            if node:
+                heapq.heappush(heap, (node.val, i, node))
+
+        return dummy.next
+
+
+# TC: O(nlogK)
+# SC: O(k)
