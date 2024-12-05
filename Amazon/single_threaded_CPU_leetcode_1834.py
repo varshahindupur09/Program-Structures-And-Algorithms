@@ -40,8 +40,8 @@ class Solution:
         minheap = []
         i = 0
 
-        while i < len(indexes) or minheap:
-            while i < len(indexes) and time >= tasks[i][0]:
+        while i < len(tasks) or minheap:
+            while i < len(tasks) and time >= tasks[i][0]:
                 heapq.heappush(minheap, [tasks[i][1], tasks[i][2]])
                 i+=1
             if minheap:
@@ -49,7 +49,7 @@ class Solution:
                 time += processing_time
                 output.append(index)
             else:
-                time = indexes[i][0]
+                time = tasks[i][0]
 
         return output
 
