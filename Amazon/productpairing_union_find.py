@@ -7,6 +7,21 @@ categories where make pairs (2 elements) no two category should be same
 Hint: The primary operations are "Find" (to determine which set an element belongs to) and "Union" (to merge two sets). 
 Hint: DFS
 ###########################################################################
+
+There are N products given in pairs, the pairing indicates that they belong to the same
+category. 
+
+Return a list of product pairs so that each product in the pair does not belong to 
+the same category.
+
+Essentially make recommendations for products and make sure that the recommended product
+ is not the same category with the other product in the pair.
+
+Input: [(1,3), (2,7), (3,8)]
+Output: [(1,2),(1,7),(3,2),(3,7),(8,2),(8,7)]
+###########################################################################
+
+
 # Graph Construction: O(E)
 # Connected Components: O(N+E)
 # O(N+E+Total Pairs Generated)
