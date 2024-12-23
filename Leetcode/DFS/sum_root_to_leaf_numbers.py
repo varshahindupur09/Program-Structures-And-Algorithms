@@ -26,7 +26,7 @@ class Solution:
         return dfs(root, 0)
 
 ########################################################################
-SOLUTION: BFS (TC: O(n) , SC: O(n))
+SOLUTION: DFS (TC: O(n) , SC: O(n)), Stack
 ########################################################################
 
 # Definition for a binary tree node.
