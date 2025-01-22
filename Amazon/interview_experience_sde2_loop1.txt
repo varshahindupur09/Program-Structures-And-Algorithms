@@ -1,0 +1,192 @@
+#Q1. DIRECTED GRAPH
+####################################################################################################################################
+data = 
+  [
+      {
+        "url": "/", 
+        "sessionId": "C4CA4238A0B923820DCC509A6F75849B", 
+        "timestamp": 1625153267, 
+        "referrer": None
+      },
+      {
+        "url": "/search",
+        "sessionId": "C4CA4238A0B923820DCC509A6F75849B",
+        "timestamp": 1625153254,
+        "referrer": "/"
+      },
+      {
+        "url": "/detail", 
+        "sessionId": "C4CA4238A0B923820DCC509A6F75849B", 
+        "timestamp": 1625153298, 
+        "referrer": "/search"
+      },
+      {
+        "url": "/reviews", 
+        "sessionId": "C4CA4238A0B923820DCC509A6F75849B", 
+        "timestamp": 162515329,  
+        "referrer": None
+      }
+    ]
+
+Problem Analysis:
+Representation: Use the session logs as a directed graph where URLs are nodes and referrers represent directed edges.
+Task: Given a source URL and a target URL, determine if there exists a path between them (direct or indirect).
+
+####################################################################################################################################
+APPROACH
+####################################################################################################################################
+
+List of approaches to determine if there exists a path between the source and target URL in the given data:
+
+Graph Construction + Breadth-First Search (BFS):
+
+Represent URLs as nodes and referrer relationships as directed edges.
+Use BFS starting from the source URL to check if the target URL can be reached.
+Graph Construction + Depth-First Search (DFS):
+
+Similar to BFS, construct a directed graph.
+Use DFS to traverse from the source URL and see if the target URL is reachable.
+Adjacency List + Recursive Traversal:
+
+Create an adjacency list representation for the graph.
+Recursively explore paths from the source node to the target.
+Transitive Closure:
+
+Compute the transitive closure of the graph using techniques like the Floyd-Warshall algorithm.
+Directly query if there exists a path between the source and target.
+Topological Sorting (if acyclic):
+
+If the graph is a Directed Acyclic Graph (DAG), sort it topologically and check for a path by traversing the sorted order.
+Union-Find (Disjoint Set Union):
+
+Use union-find to group connected nodes dynamically.
+Check if the source and target belong to the same connected component.
+
+####################################################################################################################################
+APPROACH 1: BFS
+####################################################################################################################################
+
+from collections import defaultdict
+from collections import deque
+
+def construct_graph(data):
+  graph = defaultdict(list)
+  for record in data:
+    if record["referrer"]:
+      graph[record["referrer"]].append(record["url"])   #building key-value pair
+  return graph
+
+def bfs_graph(graph, source, target):
+  if source not in graph:
+    return False
+
+  visited = set()
+  queue = deque([source])
+
+  while queue:
+    current = queue.popleft()
+    if current == target:
+      return True
+    visited.add(current)
+    for neighbor in graph[current]:
+      if neighbor not in visited:
+        queue.append(neighbor)
+
+  return False
+
+# EXAMPLE TESTCASE
+data = [
+    {"url": "/", "sessionId": "C4CA4238A0B923820DCC509A6F75849B", "timestamp": 1625153267, "referrer": None},
+    {"url": "/search", "sessionId": "C4CA4238A0B923820DCC509A6F75849B", "timestamp": 1625153254, "referrer": "/"},
+    {"url": "/detail", "sessionId": "C4CA4238A0B923820DCC509A6F75849B", "timestamp": 1625153298, "referrer": "/search"},
+    {"url": "/reviews", "sessionId": "C4CA4238A0B923820DCC509A6F75849B", "timestamp": 162515329, "referrer": None}
+    ]
+graph = construct_graph(data)
+source = "/"
+target = "/detail"
+print(bfs_graph(graph, source, target))
+
+
+####################################################################################################################################
+APPROACH 2: Recursive Traversal with AdjacencyList
+####################################################################################################################################
+
+from collections import defaultdict
+
+def construct_graph(data):
+  graph = defaultdict(list)
+  for record in data:
+    if record["referrer"]:
+      graph[record["referrer"]].append(record["url"])   #building key-value pair
+  return graph
+
+def recursive_traversal(graph, source, target, visited = None):
+  if visited is None:
+    visited = set()
+  if source == target:
+    return True
+  visited.add(source)
+  for neighbor in graph.get(source, []):
+    if neighbor not in visited:
+      if recursive_traversal(graph, neighbor, target, visited):
+        return True
+  return False
+  
+# EXAMPLE TESTCASE
+data = [
+    {"url": "/", "sessionId": "C4CA4238A0B923820DCC509A6F75849B", "timestamp": 1625153267, "referrer": None},
+    {"url": "/search", "sessionId": "C4CA4238A0B923820DCC509A6F75849B", "timestamp": 1625153254, "referrer": "/"},
+    {"url": "/detail", "sessionId": "C4CA4238A0B923820DCC509A6F75849B", "timestamp": 1625153298, "referrer": "/search"},
+    {"url": "/reviews", "sessionId": "C4CA4238A0B923820DCC509A6F75849B", "timestamp": 162515329, "referrer": None}
+    ]
+graph = construct_graph(data)
+source = "/"
+target = "/detail"
+print(recursive_traversal(graph, source, target))
+
+
+####################################################################################################################################
+APPROACH 3: DFS (WITH STACK)
+####################################################################################################################################
+from collections import defaultdict
+
+def construct_graph(data):
+  graph = defaultdict(list)
+  for record in data:
+    if record["referrer"]:
+      graph[record["referrer"]].append(record["url"])   #building key-value pair
+  return graph
+
+def dfs_graph(graph, source, target):
+    stack = [source]
+    visited = set()
+
+    while stack:
+        current = stack.pop()
+        if current == target:
+            return True
+        if current not in visited:
+            visited.add(current)
+            for neighbor in graph.get(current, []):
+                stack.append(neighbor)
+
+    return False
+  
+# EXAMPLE TESTCASE
+data = [
+    {"url": "/", "sessionId": "C4CA4238A0B923820DCC509A6F75849B", "timestamp": 1625153267, "referrer": None},
+    {"url": "/search", "sessionId": "C4CA4238A0B923820DCC509A6F75849B", "timestamp": 1625153254, "referrer": "/"},
+    {"url": "/detail", "sessionId": "C4CA4238A0B923820DCC509A6F75849B", "timestamp": 1625153298, "referrer": "/search"},
+    {"url": "/reviews", "sessionId": "C4CA4238A0B923820DCC509A6F75849B", "timestamp": 162515329, "referrer": None}
+    ]
+graph = construct_graph(data)
+source = "/"
+target = "/reviews"
+print(dfs_graph(graph, source, target)) # returns False
+
+source = "/"
+target = "/search"
+print(dfs_graph(graph, source, target)) # returns True
+
+
+
