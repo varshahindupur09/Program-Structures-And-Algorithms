@@ -1,0 +1,33 @@
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+# BFS loop
+import collections
+class Solution:
+    def verticalOrder(self, root: Optional[TreeNode]) -> List[List[int]]:
+        if not root:
+            return []
+
+        column_items = collections.defaultdict(list)
+        queue = collections.deque([(0,root)]) # x position # this would become zero
+        res = []
+        minx = float("inf") 
+        maxx = float("-inf")
+
+        while queue:
+            x , node = queue.popleft()
+            column_items[x].append(node.val) # 0 -> 3 # -1 -> 9
+            minx = min(minx, x) # 0 #0,-1=-1
+            maxx = max(maxx, x) # 0 #0,-1=-0
+            if node.left:
+                queue.append(x-1,node.left) #-1, -2
+            if node.right:
+                queue.append(x+1,node.right) #1,0 
+            # (-1, 9), (1, 8)] ((-2, 4)) ((0, 0))
+            # deque([(1, 8), (-2, 4), (0, 0)])
+
+        for level in range(minx, maxx + 1):
+            res.append(column_items[level])
